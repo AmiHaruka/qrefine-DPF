@@ -94,6 +94,7 @@ class restraints(object):
           cif_objects      = self.cif_objects,
           method           = self.params.quantum.method,
           basis            = self.params.quantum.basis,
+          device           = self.params.quantum.device,
           pdb_hierarchy    = pdb_hierarchy,
           charge           = self.params.quantum.charge,
           qm_engine_name   = self.params.quantum.engine_name,
@@ -447,6 +448,7 @@ class from_qm(object):
       # change to quantum phil scope !!!!
       method                     = 'rhf',
       basis                      = "sto-3g",
+      device                     = "cuda",
       memory                     = None,
       nproc                      = 1,
       url                        = None
@@ -454,6 +456,7 @@ class from_qm(object):
     self.fragment_extracts  = fragment_extracts
     self.method = method
     self.basis = basis
+    self.device = device
     self.memory = memory
     self.nproc = nproc
     self.qm_addon = qm_addon
@@ -499,6 +502,9 @@ class from_qm(object):
     elif(self.qm_engine_name == "torchani"):
       from .plugin.ase.torchani_qr import TorchAni
       calculator = TorchAni()
+    elif(self.qm_engine_name == "deepfield"):
+      from .plugin.ase.mace_qr import DeepFieldCalculator
+      calculator = DeepFieldCalculator()
     elif(self.qm_engine_name == "aimnet2-old"):
       from .plugin.ase.aimnet2_qr_old import AIMNet2CalculatorOLD
       calculator = AIMNet2CalculatorOLD()
@@ -525,6 +531,7 @@ class from_qm(object):
     if not self.qm_engine_name == "aimnet2":
       for attr in ['charge',
                    'basis',
+                   'device',
                    'method',
                    'memory',
                    'nproc',

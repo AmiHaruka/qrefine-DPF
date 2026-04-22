@@ -240,7 +240,33 @@ def set_qm_defaults(params, log):
           params.quantum.method,
           ), file=log)
       params.quantum.basis = ''
-  if params.quantum.engine_name=='aimnet2':
+  if params.quantum.engine_name=='deepfield':
+    print(file=log)
+    print("Setting deepfield specific defaults:", file=log)
+    if params.quantum.method==Auto:
+      raise Sorry(
+        "DeepField requires quantum.method to be set to a valid DeepField/MACE model path."
+      )
+    if params.quantum.basis==Auto:
+      params.quantum.basis=''
+    try:
+      import ase  # intentional
+      from mace.calculators import MACECalculator  # intentional
+      import torch  # intentional
+      del ase
+      del MACECalculator
+      if params.quantum.device == "cuda" and not torch.cuda.is_available():
+        raise Sorry(
+          "DeepField requested quantum.device=cuda but no CUDA GPU is available. "
+          "Use quantum.device=cpu or run in a CUDA-enabled shell."
+        )
+      print("  DeepField device: %s" % params.quantum.device, file=log)
+      del torch
+    except ModuleNotFoundError as e:
+      print(str(e), file=log)
+      if not params.debug:
+        raise Sorry("DeepField requires both ASE and MACE to be installed and available.")
+  elif params.quantum.engine_name=='aimnet2':
     print(file=log)
     print("Setting aimnet2 specific defaults:", file=log)
     if params.quantum.method==Auto:

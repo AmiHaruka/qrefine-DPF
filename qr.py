@@ -83,7 +83,7 @@ expansion = False
   .type = bool
   .help = Expand input model into super-sphere
 quantum {
-  engine_name = *mopac fairchem aimnet2 aimnet2-old torchani terachem turbomole pyscf orca gaussian xtb server
+  engine_name = *mopac fairchem deepfield aimnet2 aimnet2-old torchani terachem turbomole pyscf orca gaussian xtb server
     .type = choice(multi=False)
     .help = choose the QM program
   basis = Auto
@@ -95,6 +95,9 @@ quantum {
   method = Auto
     .type = str
     .help = Defaults to HF for all but MOPAC (PM7), xTB (GFN2) and TorchANI (ani-1x_8x)
+  device = *cuda cpu
+    .type = choice(multi=False)
+    .help = execution device for DeepField/MACE backends
   memory = None
     .type = str
     .help = memory for the QM program
@@ -310,13 +313,14 @@ qr.refine model.pdb model.mtz [<param_name>=<param_value>] ...
     #
     if(not self.params.auto_cust): return
     #
-    # AIMNet2 specific settings (as used in tests for the paper).
+    # AIMNet2/DeepField specific settings (as used in tests for the paper).
     #
-    if(self.params.quantum.engine_name=="aimnet2"):
+    if(self.params.quantum.engine_name in ["aimnet2", "deepfield"]):
+      engine_name = self.params.quantum.engine_name
       msg="""
 The following settings have been auto-set to match refine.mode=refine
-and quantum.engine_name=aimnet2:
-"""
+and quantum.engine_name=%s:
+""" % engine_name
       if self.params.debug: self.params.restraints="cctbx"
       else:                 self.params.restraints="qm"
       self.params.cluster.clustering=False
@@ -369,7 +373,9 @@ and quantum.engine_name=aimnet2:
       print("***\n", file=self.logger)
       if(self.model.altlocs_present() and not
          self.model.altlocs_present_only_hd()):
-        raise Sorry("Alternative conformations are not supported with AIMNet2.")
+        raise Sorry(
+          "Alternative conformations are not supported with %s." % engine_name
+        )
 
   def run(self):
     self.header("Refinement start")

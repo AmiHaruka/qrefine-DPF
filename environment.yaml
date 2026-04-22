@@ -12,7 +12,7 @@ dependencies:
   - python=3.12
   - networkx
   - pymongo
-  - ase=3.22.1
+  - ase>=3.26.1
   # Calculators
   - mopac
   - xtb
