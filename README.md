@@ -1,3 +1,22 @@
+## Fork-specific additions
+
+**feat/mace-backend**
+
+This fork adds an experimental `deepfield` backend for `qr.refine` via ASE/MACE.
+
+New interface:
+- `quantum.engine_name=deepfield`
+- `quantum.method=/path/to/deepfield.model`
+- `quantum.device=cuda|cpu`
+
+Notes:
+- `cuda` is the recommended path; large systems may still require clustering/fragmentation.
+- ASE calculator plugins were updated for newer ASE releases.
+
+
+
+
+
 # Quantum Refinement Module
 
 [![CI pipeline on Mamba](https://github.com/qrefine/qrefine/actions/workflows/ci-mamba.yaml/badge.svg)](https://github.com/qrefine/qrefine/actions/workflows/ci-mamba.yaml)
